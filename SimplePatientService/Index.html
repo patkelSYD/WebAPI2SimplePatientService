@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Simple Patient APP</title>
+</head>
+<body>
+
+    <div>
+        <h2>Patient Collection</h2>
+        <table id="listPatients" cellpadding="2" cellspacing="2" border="1" width="400px">
+            <tr>
+                <td style="background-color: gray; color: white">ID</td>
+                <td style="background-color: gray; color: white">FirstName</td>
+                <td style="background-color: gray; color: white">LastName</td>
+                <td style="background-color: gray; color:white">Age</td>
+                <td style="background-color: gray; color:white">Address</td>
+            </tr>
+        </table>
+    </div>
+
+    <div>
+        <h2>Search by ID</h2>
+
+        <input type="text" size="5" id="PatID" />
+        <input type="button" value="Search" onclick="find();" />
+
+        <p id="st"></p>
+
+    </div>
+    <div>
+        <h2>Post Patient</h2>
+        <form id="PatientPost" method="post">
+            ID:<input type="text" size="5" id="PatID" /> <br>
+            FirstName:<input type="text" size="15" id="PatFirstName" /> <br>
+            LastName:<input type="text" size="15" id="PatLastName" /> <br>
+            Age:<input type="text" size="5" id="PatAge" /> <br>
+            Address:<input type="text" size="5" id="PatID" /> <br>
+        </form>
+        <input type="button" value="submit" onclick="Clickpost();" />
+        <p id="st"></p>
+
+    </div>
+
+
+    <script src="Scripts/jquery-3.3.1.js"></script>
+    <script type="text/javascript">
+
+        var uri = 'api/Patient';
+
+        $(document).ready(function () {
+            $.getJSON(uri)
+                .done(function (data) {
+                    $.each(data, function (key, item) {
+                        $('#listPatients').append("<tr><td>" + item.ID + "</td>" + "<td>" + item.FirstName + "</td>" + "<td>" + item.LastName + "</td>" + "<td>" + item.Age + "</td>" + "<td>" + item.Address + "</td></tr>");
+                    });
+                });
+        });
+
+        function formatItem(item) {
+            return item.ID + item.FirstName + item.LastName + item.Age + item.Address;
+        }
+        function find() {
+            var id = $('#PatID').val();
+            $.getJSON(uri + '/' + id)
+                .done(function (data) {
+                    $('#st').text(formatItem(data));
+                })
+                .fail(function (jqXHR, textStatus, err) {
+                    $('#Patient').text('error' + err);
+                });
+        }
+
+        function Clickpost() {
+            $.ajax({
+                url: uri, // url where to submit the request
+                type: "POST", // type of action POST || GET
+                dataType: 'json', // data type
+                data: $("#form").serialize(), // post data || get data
+                success: function (result) {
+                    // you can see the result from the console
+                    // tab of the developer tools
+                    console.log(result);
+                },
+                error: function (xhr, resp, text) {
+                    console.log(xhr, resp, text);
+                }
+            })
+
+
+        }
+
+
+        
+    </script>
+
+
+</body>
+</html>
